@@ -11,7 +11,7 @@ const LoanStates = {
   4: "FAILED",
 };
 
-const App = () => {
+const Borrow = () => {
   const [provider, setProvider] = useState(null);
   const [signer, setSigner] = useState(null);
   const [contract, setContract] = useState(null);
@@ -190,38 +190,14 @@ const App = () => {
       }
     }
   };
-  
-  //   const repayLoan = async (loan) => {
-  //     if (contract) {
-  //       try {
-  //           const lender = loan.lender;
-  //           const loanAmount = loan.loanAmount.toString();
-
-  //           console.log("Lender:", lender);
-  //           console.log("Sender:", account);
-  //           console.log("Amount:", loanAmount.toString());
-
-  //           const transaction = await provider.getSigner().sendTransaction({
-  //             to: lender,
-  //             value: loanAmount,
-  //           });
-
-  //           await transaction.wait();
-  //           alert("Loan amount sent successfully!");
-  //       } catch (error) {
-  //         console.error("Error repaying loan:", error);
-  //       }
-  //     }
-  //   };
 
   return (
-    <div className="min-h-screen bg-gray-100 py-8 px-4">
-   
-      <div className="max-w-2xl mx-auto bg-white p-6 shadow-md rounded-md mb-8">
+    <div className="min-h-screen bg-gray-50 py-8 px-4">
+      <div className="max-w-2xl mx-auto bg-white p-6 shadow-lg rounded-lg mb-8">
         {!account ? (
           <button
             onClick={connectWallet}
-            className="w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 mb-4"
+            className="w-full bg-gray-800 text-white py-2 px-4 rounded-md hover:bg-gray-700 mb-4"
           >
             Connect to MetaMask
           </button>
@@ -231,7 +207,7 @@ const App = () => {
           </p>
         )}
 
-        <h3 className="text-2xl font-bold mb-4 text-center text-blue-600">
+        <h3 className="text-2xl font-bold mb-4 text-center text-gray-800">
           Submit Loan Proposal
         </h3>
         <form onSubmit={createProposal} className="space-y-4">
@@ -271,22 +247,22 @@ const App = () => {
           </div>
           <button
             type="submit"
-            className="w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600"
+            className="w-full bg-gray-800 text-white py-2 px-4 rounded-md hover:bg-gray-700"
           >
             Submit Proposal
           </button>
         </form>
       </div>
 
-      <div className="max-w-4xl mx-auto bg-white p-6 shadow-md rounded-md">
-        <h3 className="text-2xl font-bold mb-4 text-center text-blue-600">
+      <div className="max-w-4xl mx-auto bg-white p-6 shadow-lg rounded-lg">
+        <h3 className="text-2xl font-bold mb-4 text-center text-gray-800">
           Loan Offers
         </h3>
         <div className="space-y-4">
           {loans.map((loan, index) => (
             <div
               key={index}
-              className="border p-4 rounded-md bg-gray-50 flex justify-between items-center"
+              className="border p-4 rounded-md bg-gray-100 flex justify-between items-center"
             >
               <div>
                 <p>
@@ -315,7 +291,7 @@ const App = () => {
                 {loan.state === 3 && (
                   <button
                     onClick={() => repayLoan(loan)}
-                    className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
+                    className="bg-gray-800 text-white px-4 py-2 rounded-md hover:bg-gray-700"
                   >
                     Repay Loan
                   </button>
@@ -329,4 +305,4 @@ const App = () => {
   );
 };
 
-export default App;
+export default Borrow;
