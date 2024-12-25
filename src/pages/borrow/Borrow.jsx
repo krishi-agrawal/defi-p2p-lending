@@ -58,7 +58,7 @@ const App = () => {
       if (contract) {
         try {
           const allLoans = await contract.getAllPotentialLenders();
-          console.log("potential lender:", allLoans)
+          console.log("potential lender:", allLoans);
           setLoans(allLoans);
         } catch (error) {
           console.error("Error fetching loans:", error);
@@ -86,7 +86,8 @@ const App = () => {
 
     const url = "https://api.pinata.cloud/pinning/pinFileToIPFS";
     const apiKey = "89e6667c96265f5989a1";
-    const apiSecret = "9c0a0aee0a7507daad27afee003f4fd5411c4bbcd9dc28f4608aa5a592393029";
+    const apiSecret =
+      "9c0a0aee0a7507daad27afee003f4fd5411c4bbcd9dc28f4608aa5a592393029";
 
     const formData = new FormData();
     formData.append("file", selectedFile);
@@ -122,7 +123,11 @@ const App = () => {
       if (!mortgageIpfsHash) return;
 
       try {
-        const tx = await contract.createProposal(amount, dueDate, mortgageIpfsHash);
+        const tx = await contract.createProposal(
+          amount,
+          dueDate,
+          mortgageIpfsHash
+        );
         await tx.wait();
         setForm({ amount: "", date: "", mortgage: "" });
         setSelectedFile(null);
@@ -131,7 +136,6 @@ const App = () => {
       }
     }
   };
-
 
   const acceptLoan = async (loan) => {
     if (contract) {
@@ -148,28 +152,71 @@ const App = () => {
   const repayLoan = async (loan) => {
     if (contract) {
       try {
-          const lender = loan.lender;
-          const loanAmount = loan.loanAmount.toString();
-
-          console.log("Lender:", lender);
-          console.log("Sender:", account);
-          console.log("Amount:", loanAmount.toString());
-
-          const transaction = await provider.getSigner().sendTransaction({
-            to: lender,
-            value: loanAmount,
-          });
-
-          await transaction.wait();
-          alert("Loan amount sent successfully!");
+        const lender = loan.lender;
+        const loanAmount = ethers.BigNumber.from(loan.loanAmount); // Loan amount in Wei
+        const interestRate = parseFloat(loan.interestRate); // Annual interest rate in percentage
+        const loanTimeInMs = loan.time * 1000; // Convert loan.time to milliseconds
+  
+        // Calculate time elapsed in years
+        const timeElapsed =
+          (Date.now() - loanTimeInMs) / (1000 * 60 * 60 * 24 * 365); // Time in years
+        console.log("Date Now (ms):", Date.now());
+        console.log("Loan Timestamp (ms):", loanTimeInMs);
+  
+        // Calculate interest in Wei
+        const interestInWei = loanAmount
+          .mul(ethers.BigNumber.from(Math.floor(interestRate * 100))) 
+          .mul(ethers.BigNumber.from(Math.floor(timeElapsed * 10000))) 
+          .div(ethers.BigNumber.from(100)) 
+          .div(ethers.BigNumber.from(10000)); 
+  
+        // Calculate final amount in Wei
+        const finalAmountInWei = loanAmount.add(interestInWei);
+  
+        console.log("Time Elapsed (years):", timeElapsed);
+        console.log("Loan Amount (Ether):", ethers.utils.formatEther(loanAmount));
+        console.log("Interest (Ether):", ethers.utils.formatEther(interestInWei));
+        console.log("Final Amount (Ether):", ethers.utils.formatEther(finalAmountInWei));
+  
+        const transaction = await provider.getSigner().sendTransaction({
+          to: lender,
+          value: finalAmountInWei, // Pass value in Wei
+        });
+  
+        await transaction.wait();
+        alert("Loan amount sent successfully!");
       } catch (error) {
         console.error("Error repaying loan:", error);
       }
     }
   };
+  
+  //   const repayLoan = async (loan) => {
+  //     if (contract) {
+  //       try {
+  //           const lender = loan.lender;
+  //           const loanAmount = loan.loanAmount.toString();
+
+  //           console.log("Lender:", lender);
+  //           console.log("Sender:", account);
+  //           console.log("Amount:", loanAmount.toString());
+
+  //           const transaction = await provider.getSigner().sendTransaction({
+  //             to: lender,
+  //             value: loanAmount,
+  //           });
+
+  //           await transaction.wait();
+  //           alert("Loan amount sent successfully!");
+  //       } catch (error) {
+  //         console.error("Error repaying loan:", error);
+  //       }
+  //     }
+  //   };
 
   return (
     <div className="min-h-screen bg-gray-100 py-8 px-4">
+   
       <div className="max-w-2xl mx-auto bg-white p-6 shadow-md rounded-md mb-8">
         {!account ? (
           <button
@@ -184,7 +231,9 @@ const App = () => {
           </p>
         )}
 
-        <h3 className="text-2xl font-bold mb-4 text-center text-blue-600">Submit Loan Proposal</h3>
+        <h3 className="text-2xl font-bold mb-4 text-center text-blue-600">
+          Submit Loan Proposal
+        </h3>
         <form onSubmit={createProposal} className="space-y-4">
           <div>
             <label className="block text-sm font-medium">Loan Amount</label>
@@ -210,7 +259,9 @@ const App = () => {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium">Upload Mortgage Document</label>
+            <label className="block text-sm font-medium">
+              Upload Mortgage Document
+            </label>
             <input
               type="file"
               onChange={handleFileChange}
@@ -228,7 +279,9 @@ const App = () => {
       </div>
 
       <div className="max-w-4xl mx-auto bg-white p-6 shadow-md rounded-md">
-        <h3 className="text-2xl font-bold mb-4 text-center text-blue-600">Loan Offers</h3>
+        <h3 className="text-2xl font-bold mb-4 text-center text-blue-600">
+          Loan Offers
+        </h3>
         <div className="space-y-4">
           {loans.map((loan, index) => (
             <div
@@ -236,10 +289,19 @@ const App = () => {
               className="border p-4 rounded-md bg-gray-50 flex justify-between items-center"
             >
               <div>
-                <p><strong>Lender:</strong> {loan.lender}</p>
-                <p><strong>Amount:</strong> {ethers.utils.formatEther(loan.loanAmount)} ETH</p>
-                <p><strong>Interest:</strong> {loan.interestRate.toString()}%</p>
-                <p><strong>State:</strong> {LoanStates[loan.state]}</p>
+                <p>
+                  <strong>Lender:</strong> {loan.lender}
+                </p>
+                <p>
+                  <strong>Amount:</strong>{" "}
+                  {ethers.utils.formatEther(loan.loanAmount)} ETH
+                </p>
+                <p>
+                  <strong>Interest:</strong> {loan.interestRate.toString()}%
+                </p>
+                <p>
+                  <strong>State:</strong> {LoanStates[loan.state]}
+                </p>
               </div>
               <div className="space-x-2">
                 {loan.state === 2 && (

@@ -47,12 +47,12 @@ const Lender = () => {
   });
 
   const handleSendMoney = async (proposalId) => {
-    console.log("hi")
     try {
       const loans = await contract.getAllLoans();
       console.log("loans:", loans)
       for (const loan of loans) {
         if (loan.proposalId.toString() === proposalId.toString()) {
+        
           const borrower = await contract.proposalToBorrower(loan.proposalId);
           const loanAmount = loan.loanAmount.toString();
 
@@ -135,7 +135,7 @@ const Lender = () => {
                 <tr key={index} className={index % 2 === 0 ? "bg-gray-100" : "bg-white"}>
                   <td className="px-4 py-2 border border-gray-300">{proposal.borrower}</td>
                   <td className="px-4 py-2 border border-gray-300">
-                    {ethers.utils.formatEther(proposal.amount)} ETH
+                    {proposal.amount.toString()} ETH
                   </td>
                   <td className="px-4 py-2 border border-gray-300">{dueDate}</td>
                   {ProposalState[proposal.state] === "WAITING" && (

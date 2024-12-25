@@ -67,7 +67,7 @@ const GiveLoan = () => {
         { from: account }
       );
       await tx.wait();
-      alert("Loan successfully given!");
+      alert("Loan proposal successfully given!");
     } catch (err) {
       console.error("Error processing loan:", err);
       alert("Transaction failed!");

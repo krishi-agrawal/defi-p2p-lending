@@ -58,6 +58,7 @@ const Verify = () => {
                     state: proposalData.state,
                     sendMoney: proposalData.sendMoney,
                   });
+                  console.log(proposalData)
             }
         }
       
