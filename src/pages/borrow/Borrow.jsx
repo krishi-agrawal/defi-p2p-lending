@@ -145,12 +145,23 @@ const App = () => {
     }
   };
 
-  const repayLoan = async (loanId) => {
+  const repayLoan = async (loan) => {
     if (contract) {
       try {
-        const tx = await contract.loanPaid(loanId);
-        await tx.wait();
-        alert("Loan repaid successfully!");
+          const lender = loan.lender;
+          const loanAmount = loan.loanAmount.toString();
+
+          console.log("Lender:", lender);
+          console.log("Sender:", account);
+          console.log("Amount:", loanAmount.toString());
+
+          const transaction = await provider.getSigner().sendTransaction({
+            to: lender,
+            value: loanAmount,
+          });
+
+          await transaction.wait();
+          alert("Loan amount sent successfully!");
       } catch (error) {
         console.error("Error repaying loan:", error);
       }
@@ -239,9 +250,9 @@ const App = () => {
                     Accept Loan
                   </button>
                 )}
-                {loan.state === 1 && (
+                {loan.state === 3 && (
                   <button
-                    onClick={() => repayLoan(loan.loanId)}
+                    onClick={() => repayLoan(loan)}
                     className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
                   >
                     Repay Loan

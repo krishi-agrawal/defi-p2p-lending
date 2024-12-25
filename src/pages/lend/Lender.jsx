@@ -54,7 +54,7 @@ const Lender = () => {
       for (const loan of loans) {
         if (loan.proposalId.toString() === proposalId.toString()) {
           const borrower = await contract.proposalToBorrower(loan.proposalId);
-          const loanAmount = ethers.utils.parseEther(loan.loanAmount.toString());
+          const loanAmount = loan.loanAmount.toString();
 
           console.log("Borrower:", borrower);
           console.log("Sender:", account);
@@ -123,6 +123,7 @@ const Lender = () => {
               <th className="px-4 py-2 border border-gray-300">Amount</th>
               <th className="px-4 py-2 border border-gray-300">Due Date</th>
               <th className="px-4 py-2 border border-gray-300">Actions</th>
+              <th className="px-4 py-2 border border-gray-300">Details</th>
               <th className="px-4 py-2 border border-gray-300">Status</th>
             </tr>
           </thead>
@@ -157,6 +158,14 @@ const Lender = () => {
                     {/* {ProposalState[proposal.state] === "ACCEPTING" && (
                       
                     )} */}
+                  </td>
+                  <td>
+                    <Link
+                        to={`/verify?proposalId=${proposal.proposalId}`}
+                        className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                      >
+                       Get Details
+                    </Link>
                   </td>
                   <td className="px-4 py-2 border border-gray-300">{ProposalState[proposal.state]}</td>
                 </tr>

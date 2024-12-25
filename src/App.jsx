@@ -4,6 +4,7 @@ import HomePage from "./pages/homepage/HomePage"
 import Borrow from "./pages/borrow/Borrow"
 import Lender from './pages/lend/Lender'
 import GiveLoan from './pages/giveloan/GiveLoan'
+import Verify from './pages/verify/Verify'
 
 function App() {
 
@@ -15,6 +16,7 @@ function App() {
           <Route path="/borrow" element={<Borrow />} />
           <Route path="/lend" element={<Lender />} />
           <Route path="/giveLoan/" element={<GiveLoan />} />
+          <Route path="/verify/" element={<Verify />} />
         </Routes>
       </BrowserRouter>
     </>
